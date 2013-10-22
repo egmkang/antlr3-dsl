@@ -265,6 +265,7 @@ TypeClass* ParseEnum(pANTLR3_BASE_TREE tree, Generator *generator)
 {
   int child_count = tree->getChildCount(tree);
   assert(tree && child_count >= 1);
+  (void)child_count;
   TypeClass *type_enum = NULL;
   for(unsigned index = 0;
       index < tree->getChildCount(tree);
