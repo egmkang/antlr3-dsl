@@ -1,0 +1,143 @@
+package Game.Server
+
+include "public/server_message.h"
+
+enum
+{
+max_cache_dna_count = 24, //DNA临时仓库大小
+max_equip_dna_count = 11, //可以装备的DNA个数
+max_dna_package_capacity = 30, //DNA仓库大小
+max_dna_count = 54, //最多多少个DNA
+dna_unique_id_zero = 128, //DNA UniqueID的分界线,<128则在临时仓库
+}
+
+forward enum result_id_success
+
+struct DNAInfo
+{
+int64 UniqueID = dna_unique_id_zero,  //基因ID小于128则在临时仓库
+int32 DNAID,
+int32 Exp,
+int32 SirdarID,                       //武将ID,仓库和临时基因为-1
+int8 Postion,                         //在仓库内(武将身上)的位置下标,从0开始
+}
+
+//MSG_LOGIC_GET_DNA_INFO,request没有MessageBody
+message ResponseGetDNAInfo
+{
+int32 DNAPoints, //剩余的DNA点数,用来购买基因
+int32 CostMoney, //使用元宝研发的总花费
+int32 CostCoin,  //使用金币研发的总花费
+int8 CurrentIndex, //当前基因研发(点亮)的下标,从0开始
+DNAInfo DNAInfo[max_dna_count],
+}
+
+//MSG_LOGIC_DNA_RESEARCH
+message RequestDNAResearch
+{
+int8 CostMoney, //是否花钱,0不花money,1花money
+}
+
+message ResponseDNAResearch
+{
+int16 ResultID,
+enable_if ResultID == result_id_success
+{
+DNAInfo DNAInfo, //如果成功,返回一个获得的基因
+int8 CurrentIndex, //点亮的研发下标
+}
+}
+
+//MSG_LOGIC_DNA_MERGE
+message RequestDNAMerge
+{
+int64 UniqueIDA = dna_unique_id_zero, //A把
+int64 UniqueIDB = dna_unique_id_zero, //B吃掉
+}
+
+message ResponseDNAMerge
+{
+int16 ResultID,
+enable_if ResultID == result_id_success
+{
+DNAInfo DNAInfo, //合并后的基因信息
+int64 DeletedUniqueID[max_cache_dna_count],
+}
+}
+
+//MSG_LOGIC_DNA_MOVE
+message RequestDNAMove
+{
+int64 UniqueID = dna_unique_id_zero,  //要移动的基因ID
+int32 SirdarID,                       //目标仓库(武将ID)
+int8 Postion,                         //目标位置下标
+}
+
+message ResponseDNAMove
+{
+int16 ResultID,
+enable_if ResultID == result_id_success
+{
+int64 DeletedUniqueID = dna_unique_id_zero, //如果为0,就是没有要删除的基因
+DNAInfo DNAInfo,                            //完整刷新移动后的基因信息
+}
+}
+
+//MSG_LOGIC_DNA_SELL
+message RequestDNASell
+{
+int64 UniqueID = dna_unique_id_zero,  //要被分解的基因ID
+int8 DeltaDNAPoints,                  //分解该基因得到的碎片个数,客户端填0
+}
+
+message ResponseDNASell
+{
+int16 ResultID,
+enable_if ResultID == result_id_success
+{
+int64 DeletedUniqueID = dna_unique_id_zero, //被删除的基因ID
+int32 DNAPoints, //剩余的基因点数
+}
+}
+
+//MSG_LOGIC_DNA_BUY
+message ResponseDNABuy
+{
+int16 ResultID,
+enable_if ResultID == result_id_success
+{
+int32 DNAPoints, //剩余的基因点数
+DNAInfo DNAInfo, //买到的基因
+}
+}
+
+//SS_MSG_DNA_RESEARCH
+message RequestDBDNAResearch
+{
+int32 DeltaCoin,
+int32 DeltaMoney,
+int8 FromDNAIndex,
+int8 DestDNAIndex,
+DNAInfo DNAInfo,
+}
+
+//SS_MSG_DNA_BUY
+message RequestDBDNABuy
+{
+int32 DeltaDNAPoints,
+DNAInfo DNAInfo,
+}
+
+//SS_MSG_NOTIFY_DNA_COUNT_INFO
+message NotifyDNACountInfo
+{
+int32 Index4Count,
+int32 CostCoin,
+int32 CostMoney,
+}
+
+//SS_MSG_DNA_MERGE
+typedef ResponseDNAMerge RequestDBDNAMerge
+//MSG_LOGIC_DNA_MERGE_QUICKLY, SS_MSG_DNA_MERGE_QUICKLY
+typedef ResponseDNAMerge RequestDBQuickMerge
+typedef ResponseDNAMerge ResponseQuickMerge

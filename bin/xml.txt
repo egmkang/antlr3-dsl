@@ -1,0 +1,15 @@
+struct stNode
+{
+  [attribute="m_iID", default=0, optional=true]
+  int32 m_iID,
+
+  [attribute=m_iValue]
+  int32 m_iValue,
+
+  [attribute=m_byValue]
+  int8 m_byValue,
+
+  [attribute=m_byValue]
+  int m_byValue[10],
+}
+

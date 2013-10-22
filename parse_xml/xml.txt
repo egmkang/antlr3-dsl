@@ -1,0 +1,56 @@
+struct stNode
+{
+  [attribute=m_iID, default=0, optional=true]
+  int32 m_iID,
+
+  [attribute=m_iValue]
+  int32 m_iValue,
+
+  [attribute=m_byValue]
+  int8 m_byValue,
+}
+
+struct stLevel
+{
+  int64 m_lExp,
+  int16 m_nLevel,
+}
+
+struct stNode1
+{
+  [attribute=m_iType]
+  int32 m_iType,
+
+  [attribute=m_dValue]
+  double m_dValue,
+}
+
+class CConfig
+{
+  [root=/root/node/item, order=m_iID]
+  CArray<stNode, 10> m_astArray,
+
+  [root=/root/node1]
+  stNode1 m_stNode1,
+
+  [root=/root/Level, order=m_lExp]
+  CArray<stLevel, 100> m_astLevel,
+
+  function GetNode1()
+  {
+    let node = self.m_stNode1
+    return node
+  }
+
+  function GetNodeByID(int32 id)
+  {
+    let node in self.m_astArray where node.m_iD == id
+    return unique(node)
+  }
+
+  function GetLevelByExp(int64 exp)
+  {
+    let node in self.m_astLevel where exp >= node.m_lExp
+    return min(node)
+  }
+}
