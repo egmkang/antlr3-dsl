@@ -9,7 +9,7 @@ options
 
 
 prog	:
-	(enum_decl | struct_decl)+
+	(enum_decl | struct_decl | class_decl)+
 	;
 	
 enum_decl
@@ -22,12 +22,17 @@ enum_field_decl
 
 struct_decl
 	:
-	T_STRUCT T_ID '{' struct_field_decl+ '}'
+	T_STRUCT T_ID '{' struct_field_decl+ '}' -> ^(T_STRUCT T_ID struct_field_decl+)
+	;
+	
+class_decl
+	:
+	T_CLASS T_ID '{' struct_field_decl+ '}'	 -> ^(T_CLASS T_ID struct_field_decl+)
 	;
 
 struct_field_decl
 	:	
-	field_property_decl? field_decl ',' -> ^(field_decl field_property_decl?)
+	field_property_decl? field_decl ',' -> field_property_decl? field_decl
 	;
 
 field_decl 
@@ -35,14 +40,14 @@ field_decl
 	(common_field_decl | array_field_decl)
 	;
 
+array_field_decl
+	:
+	T_ID T_ID '[' T_ID ']' -> ^(T_ARRAY T_ID T_ID T_ID)
+	| T_ID T_ID '[' T_INT ']' -> ^(T_ARRAY T_ID T_ID T_INT)
+	;
 common_field_decl
 	:
-	T_ID T_ID
-	;
-
-array_field_decl
-	:	
-	T_ARRAY T_ID ',' T_ID '>' T_ID
+	T_ID T_ID -> ^(T_ID T_ID)
 	;
 
 field_property_decl
@@ -83,7 +88,7 @@ T_CLASS	:
 	;
 
 T_ARRAY	:
-	'CArray<'
+	'Array'
 	;
 
 T_ID  :	('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*

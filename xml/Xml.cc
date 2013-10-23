@@ -1,7 +1,9 @@
 #include <assert.h>
 #include <iostream>
+#include <vector>
 #include "ParseXmlLexer.h"
 #include "ParseXmlParser.h"
+#include "XmlDocInfo.h"
 
 pANTLR3_BASE_TREE getChild(pANTLR3_BASE_TREE tree, unsigned i)
 {
@@ -13,18 +15,6 @@ const char* getText(pANTLR3_BASE_TREE tree)
 {
   return (const char*) tree->getText(tree)->chars;
 }
-
-//const char* getComment(pANTLR3_BASE_TREE tree, unsigned i)
-//{
-//  if(tree->getChildCount(tree) > i)
-//  {
-//    pANTLR3_BASE_TREE child = getChild(tree, i);
-//    pANTLR3_COMMON_TOKEN tok = child->getToken(child);
-//    if(tok && tok->type == COMMENT)
-//      return getText((pANTLR3_BASE_TREE)tree->getChild(tree, i));
-//  }
-//  return "";
-//}
 
 void print_ast(pANTLR3_BASE_TREE tree, int depth)
 {
@@ -47,14 +37,7 @@ void print_ast(pANTLR3_BASE_TREE tree, int depth)
   }
 }
 
-void help()
-{
-  std::cerr << "message [option]" << std::endl
-            << "Options:" << std::endl
-            << "  -cpp_out=dir    set C++ output dicectory" << std::endl
-            << "  -Idir           set input directory" << std::endl
-            << "  --help          show me all options" << std::endl;
-}
+void Analysis(pANTLR3_BASE_TREE tree);
 
 int main(int argc, const char* argv[])
 {
@@ -62,7 +45,6 @@ int main(int argc, const char* argv[])
   if(!stream)
   {
     std::cerr << "need one file" << std::endl;
-    std::cerr << "use --help to see all options" << std::endl;
     return 0;
   }
   assert(stream);
@@ -83,6 +65,24 @@ int main(int argc, const char* argv[])
 
   print_ast(tree, 0);
 
+  Analysis(tree);
+
   return 0;
 }
 
+void Analysis(pANTLR3_BASE_TREE tree)
+{
+  pANTLR3_COMMON_TOKEN tok = tree->getToken(tree);
+  if(tok)
+  {
+
+  }
+  else
+  {
+    unsigned count = tree->getChildCount(tree);
+    for(unsigned i = 0; i < count; ++i)
+    {
+      Analysis(getChild(tree, i));
+    }
+  }
+}

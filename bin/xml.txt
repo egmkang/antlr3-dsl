@@ -13,3 +13,8 @@ struct stNode
   int m_byValue[10],
 }
 
+class Nodes
+{
+  [path="/root/"]
+  stNode node,
+}
