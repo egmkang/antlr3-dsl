@@ -47,7 +47,7 @@ array_field_decl
 	;
 common_field_decl
 	:
-	T_ID T_ID -> ^(T_ID T_ID)
+	T_ID T_ID -> ^(T_FIELD T_ID T_ID)
 	;
 
 field_property_decl
@@ -57,12 +57,12 @@ field_property_decl
 
 property_item_decl
 	:
-	T_ID '=' prop_value_decl -> ^(T_ID prop_value_decl)
+	T_ID '=' prop_value_decl -> ^(T_PROPERTY T_ID prop_value_decl)
 	;
 	
 property_item_decl1
 	:	
-	',' T_ID '=' prop_value_decl -> ^(T_ID prop_value_decl)
+	',' T_ID '=' prop_value_decl -> ^(T_PROPERTY T_ID prop_value_decl)
 	;
 
 prop_value_decl
@@ -89,6 +89,16 @@ T_CLASS	:
 
 T_ARRAY	:
 	'Array'
+	;
+	
+T_FIELD
+	:
+	'field'	
+	;
+
+T_PROPERTY
+	:
+	'property'	
 	;
 
 T_ID  :	('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*

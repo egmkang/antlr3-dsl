@@ -4,6 +4,29 @@
 #include <map>
 #include <vector>
 
+class EnumField
+{
+  public:
+    std::string& name() { return name_; }
+    std::string& value() { return value_; }
+    std::string& comment() { return comment_; }
+  private:
+    std::string name_;
+    std::string value_;
+    std::string comment_;
+};
+
+class XmlEnum
+{
+  public:
+    XmlEnum(const std::string& name) : name_(name){}
+    std::string& name() { return name_; }
+    std::vector<EnumField>& fields() { return fields_; }
+  private:
+    std::string name_;
+    std::vector<EnumField> fields_;
+};
+
 class FieldProperty
 {
   public:
@@ -42,6 +65,10 @@ class XmlField
     FieldProperty *property_;
 };
 
+class XmlFunction
+{
+};
+
 class XmlType
 {
   public:
@@ -55,9 +82,11 @@ class XmlType
     }
 
     std::vector<XmlField>& fields() { return fields_; }
+    std::vector<XmlFunction>& functions() { return functions_; }
   private:
     std::string type_name_;
     std::vector<XmlField> fields_;
+    std::vector<XmlFunction> functions_;
 };
 
 #endif
