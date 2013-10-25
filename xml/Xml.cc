@@ -6,8 +6,8 @@
 #include "XmlDocInfo.h"
 
 std::vector<XmlEnum*> g_enum;
-std::vector<XmlType*> g_struct;
-std::vector<XmlType*> g_class;
+std::vector<XmlClass*> g_struct;
+std::vector<XmlClass*> g_class;
 
 pANTLR3_BASE_TREE getChild(pANTLR3_BASE_TREE tree, unsigned i)
 {
@@ -30,6 +30,16 @@ const char* getComment(pANTLR3_BASE_TREE tree, unsigned i)
       return getText((pANTLR3_BASE_TREE)tree->getChild(tree, i));
   }
   return "";
+}
+
+std::string removeQuotation(const std::string& str)
+{
+  if((*str.begin() == '\'' && *--str.end() == '\'' ) ||
+      (*str.begin() == '\"' && *--str.end() == '\"'))
+  {
+    return str.substr(1, str.size() - 2);
+  }
+  return str;
 }
 
 void print_ast(pANTLR3_BASE_TREE tree, int depth)
@@ -158,13 +168,51 @@ void ParseXmlEnum(pANTLR3_BASE_TREE tree)
   g_enum.push_back(xml_enum);
 }
 
+void ParseProperty(pANTLR3_BASE_TREE tree, FieldProperty& property)
+{
+  int child_count = tree->getChildCount(tree);
+  for(int index = 0; index < child_count; ++index)
+  {
+    pANTLR3_BASE_TREE child = getChild(tree, index);
+
+    pANTLR3_BASE_TREE property_name = getChild(child, 0);
+    const std::string& property_name_str = getText(property_name);
+
+    pANTLR3_BASE_TREE property_value = getChild(child, 1);
+    const std::string& property_value_str = removeQuotation(getText(property_value));
+
+    if(property_name_str == "attribute")
+    {
+      property.attr() = property_value_str;
+    }
+    else if(property_name_str == "default")
+    {
+      property.default_value() = property_value_str;
+    }
+    else if(property_name_str == "optional")
+    {
+      property.optional() = property_value_str;
+    }
+    else if(property_name_str == "path")
+    {
+      property.path() = property_value_str;
+    }
+    else
+    {
+      property[property_name_str] = property_value_str;
+    }
+  }
+}
+
 void ParseXmlClass(pANTLR3_BASE_TREE tree)
 {
   int child_count = tree->getChildCount(tree);
   assert(tree && child_count >= 1);
   (void)child_count;
   const std::string& name = getText(getChild(tree, 0));
-  XmlType *type = new XmlType(name);
+  XmlClass *type = new XmlClass(name);
+
+  FieldProperty property;
 
   for(unsigned index = 1;
       index < tree->getChildCount(tree);
@@ -180,6 +228,8 @@ void ParseXmlClass(pANTLR3_BASE_TREE tree)
     {
       case T_PROPERPTY_BEGIN:
         {
+          property.clear();
+          ParseProperty(child, property);
         }
         break;
       case T_ID:

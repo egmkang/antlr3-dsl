@@ -34,9 +34,18 @@ class FieldProperty
     std::string& default_value() { return default_value_; }
     std::string& optional() { return optional_; }
     std::string& path() { return path_; }
-    std::string& operator[] (std::string& property_name)
+    std::string& operator[] (const std::string& property_name)
     {
       return other_property_[property_name];
+    }
+
+    void clear()
+    {
+      attr_.clear();
+      default_value_.clear();
+      optional_.clear();
+      path_.clear();
+      other_property_.clear();
     }
   private:
     std::string attr_;
@@ -49,34 +58,32 @@ class FieldProperty
 class XmlField
 {
   public:
-    XmlField(const std::string& name, FieldProperty *property)
-      : field_name_(name), property_(property)
+    XmlField(const std::string& name, FieldProperty& property)
+      : field_name_(name), property_(property), array_length_("0")
     {
-    }
-    ~XmlField()
-    {
-      delete property_;
     }
 
     std::string& field_name() { return field_name_; }
-    FieldProperty* property() { return property_; }
+    FieldProperty& property() { return property_; }
+    std::string& array_length() { return array_length_; }
   private:
     std::string field_name_;
-    FieldProperty *property_;
+    FieldProperty property_;
+    std::string array_length_;
 };
 
 class XmlFunction
 {
 };
 
-class XmlType
+class XmlClass
 {
   public:
-    XmlType(const std::string& name)
+    XmlClass(const std::string& name)
       : type_name_(name)
     {
     }
-    ~XmlType()
+    ~XmlClass()
     {
       this->fields_.clear();
     }

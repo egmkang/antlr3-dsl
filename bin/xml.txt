@@ -10,7 +10,7 @@ enum
 
 struct stDNADistributionItem
 {
-  [attribute="m_iDNAID"]
+  [attribute="m_iDNAID", default=0]
   int32 m_iDNAID,
 
   [attribute="m_iLevel"]
