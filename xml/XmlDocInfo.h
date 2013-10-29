@@ -58,15 +58,17 @@ class FieldProperty
 class XmlField
 {
   public:
-    XmlField(const std::string& name, FieldProperty& property)
-      : field_name_(name), property_(property), array_length_("0")
+    XmlField(const std::string& type, const std::string& name)
+      : type_(type), field_name_(name), array_length_("0")
     {
     }
 
+    std::string& field_type() { return type_; }
     std::string& field_name() { return field_name_; }
     FieldProperty& property() { return property_; }
     std::string& array_length() { return array_length_; }
   private:
+    std::string type_;
     std::string field_name_;
     FieldProperty property_;
     std::string array_length_;

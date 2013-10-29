@@ -204,6 +204,17 @@ void ParseProperty(pANTLR3_BASE_TREE tree, FieldProperty& property)
   }
 }
 
+XmlField ParseField(pANTLR3_BASE_TREE tree)
+{
+  const std::string& type = getText(getChild(tree, 0));
+  const std::string& name = getText(getChild(tree, 1));
+  const std::string& array_length = tree->getChildCount(tree) == 3 ? getText(getChild(tree, 2)) : "";
+
+  XmlField field(type, name);
+  field.array_length() = array_length;
+  return field;
+}
+
 void ParseXmlClass(pANTLR3_BASE_TREE tree)
 {
   int child_count = tree->getChildCount(tree);
@@ -232,13 +243,16 @@ void ParseXmlClass(pANTLR3_BASE_TREE tree)
           ParseProperty(child, property);
         }
         break;
-      case T_ID:
+      case T_FIELD:
+      case T_ARRAY:
         {
+          XmlField field = ParseField(child);
+          field.property() = property;
+          type->fields().push_back(field);
         }
         break;
     }
   }
-
 
   if(type->functions().empty())
   {
