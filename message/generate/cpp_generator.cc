@@ -296,7 +296,7 @@ void CppGenerator::GenerateStruct(TypeClass *type)
       }
       else
       {
-        encode_stream << std::endl << this->indent() << "coded_length = this->" << field_string.name << ".encode(&pOut);";
+        encode_stream << std::endl << this->indent() << "coded_length = this->" << field_string.name << ".encode(pOut);";
       }
       encode_stream << std::endl << this->indent() << "node_size += coded_length;" << std::endl;
     }
@@ -321,8 +321,8 @@ void CppGenerator::GenerateStruct(TypeClass *type)
       this->indent_down();
       encode_stream << std::endl << this->indent() << "}";
 
-      encode_stream << std::endl << this->indent() << "coded_length = CCodeEngine::encode_int16(&ptmp, " << field_string.array_size_name << ");";
-      encode_stream << std::endl << this->indent() << "iOutLength += coded_length;";
+      encode_stream << std::endl << this->indent() << "coded_length = CCodeEngine::encode_int16(pOut, " << field_string.array_size_name << ");";
+      encode_stream << std::endl << this->indent() << "node_size += coded_length;";
       encode_stream << std::endl;
 
       encode_stream << std::endl << this->indent() << "for(int16_t n = 0; n < this->" << field_string.array_size_name << "; ++n)";
@@ -332,13 +332,13 @@ void CppGenerator::GenerateStruct(TypeClass *type)
       this->indent_up();
       if(nodes[idx]->is_integer())
       {
-        encode_stream << std::endl << this->indent() << "coded_length = CCodeEngine::encode_" << nodes[idx]->type() << "(&ptmp, this->" << field_string.name << "[n]);";
-        encode_stream << std::endl << this->indent() << "iOutLength += coded_length;";
+        encode_stream << std::endl << this->indent() << "coded_length = CCodeEngine::encode_" << nodes[idx]->type() << "(pOut, this->" << field_string.name << "[n]);";
+        encode_stream << std::endl << this->indent() << "node_size += coded_length;";
       }
       else
       {
-        encode_stream << std::endl << this->indent() << "coded_length = this->" << field_string.name << "[n].encode(&ptmp);";
-        encode_stream << std::endl << this->indent() << "iOutLength += coded_length;";
+        encode_stream << std::endl << this->indent() << "coded_length = this->" << field_string.name << "[n].encode(pOut);";
+        encode_stream << std::endl << this->indent() << "node_size += coded_length;";
       }
       this->indent_down();
       encode_stream << std::endl << this->indent() << "}";
