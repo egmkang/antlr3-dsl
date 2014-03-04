@@ -332,7 +332,7 @@ void CppGenerator::GenerateStruct(TypeClass *type)
       this->indent_up();
       if(nodes[idx]->is_integer())
       {
-        encode_stream << std::endl << this->indent() << "coded_length = CCodeEngine::encode_" << nodes[idx]->type() << "(pOut, this->" << field_string.name << "[n]);";
+        encode_stream << std::endl << this->indent() << "coded_length = CCodeEngine::encode_" << static_cast<FieldArray*>(nodes[idx])->field_type() << "(pOut, this->" << field_string.name << "[n]);";
         encode_stream << std::endl << this->indent() << "node_size += coded_length;";
       }
       else
@@ -390,7 +390,7 @@ void CppGenerator::GenerateStruct(TypeClass *type)
       this->indent_up();
       if(nodes[idx]->is_integer())
       {
-        decode_stream << std::endl << this->indent() << "decode_length = CCodeEngine::decode_" << nodes[idx]->type() << "(pIn, (u" << nodes[idx]->type() << "_t*)&" << field_string.name << "[n]);";
+        decode_stream << std::endl << this->indent() << "decode_length = CCodeEngine::decode_" << static_cast<FieldArray*>(nodes[idx])->field_type() << "(pIn, (u" << static_cast<FieldArray*>(nodes[idx])->field_type() << "_t*)&" << field_string.name << "[n]);";
       }
       else
       {

@@ -1,4 +1,4 @@
-package Game.Server
+package Game.Server cpp
 
 include "public/server_message.h"
 
@@ -7,11 +7,11 @@ enum
 max_cache_dna_count = 24, //DNA临时仓库大小
 max_equip_dna_count = 11, //可以装备的DNA个数
 max_dna_package_capacity = 30, //DNA仓库大小
-max_dna_count = 54, //最多多少个DNA
+max_dna_count = 80, //最多多少个DNA
 dna_unique_id_zero = 128, //DNA UniqueID的分界线,<128则在临时仓库
 }
 
-forward enum result_id_success
+forward enum result_id_success 0
 
 struct DNAInfo
 {

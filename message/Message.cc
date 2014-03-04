@@ -198,7 +198,8 @@ void Analysis(pANTLR3_BASE_TREE tree, Generator *generator)
       case PACKAGES:
         {
           const std::string& package_name = getText(getChild(tree, 0));
-          generator->AddNamespace("cpp", package_name);
+          const std::string& package_lang = getText(getChild(tree, 1));
+          generator->AddNamespace(package_lang, package_name);
         }
         break;
       case LBRACKET:
@@ -223,7 +224,8 @@ void Analysis(pANTLR3_BASE_TREE tree, Generator *generator)
           Node *forward = NULL;
           if(tok->type == ENUM)
           {
-            forward = new FieldEnum(getText(child_name), "");
+            pANTLR3_BASE_TREE child_default_value = getChild(tree, 2);
+            forward = new FieldEnum(getText(child_name), child_default_value ? getText(child_default_value) : "0");
           }
           else
           {

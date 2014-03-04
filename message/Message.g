@@ -13,7 +13,7 @@ prog	:
 	;
 
 forward_decl 
-	: FORWARD ENUM ID -> ^(FORWARD ENUM ID)
+	: FORWARD ENUM ID INT? -> ^(FORWARD ENUM ID INT?)
 	| FORWARD STRUCT ID -> ^(FORWARD STRUCT ID)
 	;
 
@@ -22,7 +22,7 @@ typedef_decl
 	;
 
 packages 
-	:PACKAGES PATH -> ^(PACKAGES PATH)
+	:PACKAGES PATH LANG? -> ^(PACKAGES PATH LANG?)
 	;
 
 include :
@@ -99,6 +99,8 @@ INCLUDE :
 	;
 PACKAGES
 	: 'package'
+	;
+LANG	: ('cpp' | 'as')
 	;
 LQUO	: 'lquo'
 	;
