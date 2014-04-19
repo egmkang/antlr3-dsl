@@ -1,0 +1,17 @@
+this is a DSL like protocol buffer to generate codes, now only has cpp implementation.
+support type:
+int8, int16, int32, int64, string, and user defined struct.
+for example(item.txt):
+struct Item
+{
+  int8 ItemType,
+  int32 ItemID,
+  string name[128],
+}
+
+and compile it like this:
+./message item.txt
+
+now you can get two files: name.h and name.cpp.
+detail sample in $ROOT/bin.
+enjoy it
