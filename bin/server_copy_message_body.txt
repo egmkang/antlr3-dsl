@@ -1,0 +1,117 @@
+package Game.Server cpp
+
+include "public/server_message.h"
+include "public/server_item_define.h"
+
+enum
+{
+	max_map_id_count = 512,//最大能开启的地图数
+	shoot_cask_cd = 300,//打木桶的CD
+	max_chapter_count = 16,
+	max_chapter_copy_count = 36,
+	max_chapter_elite_count = 12,
+	max_chapter_devil_count = 12,
+}
+
+forward enum result_id_success 10
+forward struct PropsInfo
+
+struct GameCopyStar
+{
+	int8 Chapter,
+	int8 CopyStar[max_chapter_copy_count],
+	int8 EliteCopyStar[max_chapter_elite_count],
+	int8 DevilCopyStar[max_chapter_devil_count],
+}
+
+struct GameCopyStatus
+{
+	int16 Chapter,
+	int16 ChapterIndex,
+	int8 MapStatus,
+}
+
+struct PlayerCopyStatus
+{
+	int16 CopyChapter,//普通副本进度
+	int16 CopyChapterIndex,
+	int16 EliteCopyChapter,//精英副本进度
+	int16 EliteCopyChapterIndex,
+	int16 DevilCopyChapter,//魔王副本进度
+	int16 DevilCopyChapterIndex,
+}
+
+//MSG_LOGIC_GET_COPY_INFO
+message ResponseGetCopyInfo
+{
+	int16 CurrentChapter,//当前所在的章节
+	PlayerCopyStatus PlayerCopyStatus,
+	GameCopyStatus GameCopyStatus[max_map_id_count],
+	GameCopyStar GameCopyStar[max_chapter_count],
+}
+
+//MSG_LOGIC_REFRESH_COPY_COUNT
+message RequestRefreshCopyCount
+{
+	int32 Chapter,//章节ID,如果章节ID和下标都是0,则表示购买精英副本次数
+	int32 ChapterIndex,//下标从1开始
+	int32 DeltaMoney,//花费
+	int32 RefreshCount,//刷新的次数
+}
+
+//数据通过CNotifyCopyInfo返回
+message ResponseRefreshCopyCount
+{
+	int16 ResultID,
+	int8 CopyType, //0,普通,1,精英,2魔王
+}
+
+//MSG_LOGIC_NOTIFY_COPY_SIMPLE_INFO
+message NotifyCopySimpleInfo
+{
+	PlayerCopyStatus PlayerCopyStatus,
+}
+
+//MSG_LOGIC_SET_CURRENT_CHAPTER
+message RequestSetCurrentChapter
+{
+	int16 CurrentChapter,
+}
+
+//MSG_LOGIC_AUTO_FIGHT
+message RequestAutoFight
+{
+	int8  CopyType,//0,普通,1,精英,2魔王
+	int16 CopyChapter,
+	int16 CopyIndex,
+	int32 RoomID,
+}
+
+message ResponseAutoFight
+{
+	int32 Coin,
+	int32 Exp,
+	int32 SkillPoints,
+	PropsInfo PropsInfo[max_props_count],
+}
+
+//MSG_LOGIC_AUTO_FIGHT_START
+message RequestAutoFightStart
+{
+	int32 MapID,//地图ID
+	int32 RoomID,
+}
+
+message ResponseAutoFightStart
+{
+	int16 ResultID,
+}
+
+//MSG_LOGIC_AUTO_FIGHT_END
+typedef RequestAutoFightStart RequestAutoFightEnd
+typedef ResponseAutoFightStart ResponseAutoFightEnd
+
+//MSG_LOGIC_NOTIFY_COPY_INFO
+typedef ResponseGetCopyInfo NotifyCopyInfo
+//MSG_LOGIC_SET_CURRENT_CHAPTER
+typedef RequestSetCurrentChapter ResponseSetCurrentChapter
