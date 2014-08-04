@@ -274,17 +274,21 @@ void CppGenerator::GenerateStruct(TypeClass *type)
       this->hh_stream_ << nodes[idx]->comment();
 
     //init
-    if(field_string.type != "char" && !field_string.array_size.length())
-    {
-      init_stream << std::endl << this->indent() << "this->" << field_string.name << " = " << field_string.default_value << ";";
-    }
-    else if(field_string.type == "char")
+    if(field_string.type == "char")
     {
       init_stream << std::endl << this->indent() << "this->" << field_string.name << "[0] = " << "'\\0';";
     }
     else if(field_string.array_size.length())
     {
       init_stream << std::endl << this->indent() << "this->" << field_string.array_size_name << " = 0;" ;
+    }
+    else if (!nodes[idx]->is_integer())
+    {
+      init_stream << std::endl << this->indent() << "this->" << field_string.name << ".clear();" ;
+    }
+    else if(field_string.type != "char" && !field_string.array_size.length())
+    {
+      init_stream << std::endl << this->indent() << "this->" << field_string.name << " = " << field_string.default_value << ";";
     }
 
     //encode
